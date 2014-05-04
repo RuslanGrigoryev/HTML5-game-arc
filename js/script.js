@@ -10,7 +10,8 @@
     gameHeight = canvasBg.height,
 
     fps = 10,
-    drawInterval = null;
+    drawInterval = null,
+    jet1;
 
 clearCanvasBtn.addEventListener('click', clearBg, false);
 sprite.src = "i/sprite.png";
@@ -18,7 +19,8 @@ sprite.addEventListener('load', init, false);
 
 function init () {
 	drawBg();
-	startDrawing()
+	startDrawing();
+	jet1 = new Jet();
 }
 
 function clearBg () {
@@ -30,18 +32,7 @@ function clearJet () {
 }
 
 function draw () {
-	drawJet();
-}
-
-function drawJet () {
-	clearJet();
-	var srcX  = 0,
-	    srcY  = 501,
-	    drawX = 200,
-	    drawY = 200,
-	    width = 120;
-	    height = 91;
-	ctxJet	.drawImage(sprite, srcX, srcY, gameWidth, gameHeight, drawX, drawY, gameWidth, gameHeight);
+	jet1.draw();
 }
 
 function drawBg() {
@@ -61,3 +52,16 @@ function stopDrawing () {
 	clearInterval(drawInterval);
 }
 
+function Jet () {
+	this.srcX  = 0;
+	this.srcY  = 501;
+	this.drawX = 200;
+	this.drawY = 200;
+	this.width = 120;
+	this.height = 91;
+}
+
+Jet.prototype.draw = function  () {
+	clearJet();
+	ctxJet.drawImage(sprite, this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
+};
