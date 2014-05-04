@@ -13,8 +13,12 @@
 
     isPlaying = false,
     requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
-    mainJet,
-    enemyJet;
+    mainJet = new Jet(),
+    spawnInterval,
+    totalEnemies = 0,
+    enemies = [],
+    spawnRate = 2000,
+    spawnAmount = 1;
 
 clearCanvasBtn.addEventListener('click', clearBg, false);
 sprite.src = "i/sprite.png";
@@ -22,19 +26,39 @@ sprite.addEventListener('load', init, false);
 
 // INITIALIZATION 
 function init () {
-	mainJet = new Jet();
-	enemyJet = new Enemy();
 	drawBg();
 	startLoop();
-
 	document.addEventListener('keydown', checkKeyDown,false);
 	document.addEventListener('keyup', checkKeyUp,false);
 }
 
+function spawnEnemy (num) {
+	for (var i = 0; i < num; i++) {
+		enemies[totalEnemies] = new Enemy();
+		totalEnemies++;
+	}
+}
+
+function drawAllEnemies () {
+	clearEnemy();
+	for ( var i = 0 ; i < enemies.length; i++) {
+		enemies[i].draw();
+	}
+}
+
+function startSpawningEnemies () {
+	stopSpawningEnemies();
+	spawnInterval = setInterval(function () {spawnEnemy(spawnAmount);}, spawnRate)
+}
+
+function stopSpawningEnemies () {
+	clearInterval(spawnInterval);
+}
+
 function loop () {
 	if (isPlaying) {
-		enemyJet.draw();
 		mainJet.draw();
+		drawAllEnemies();
 		requestAnimFrame(loop);
 	}
 }
@@ -42,10 +66,12 @@ function loop () {
 function startLoop () {
 	isPlaying = true;
 	loop();
+	startSpawningEnemies();
 }
 
 function stopLoop () {
 	isPlaying = false;
+	stopSpawningEnemies();
 }	
 
 function clearBg () {
@@ -119,7 +145,6 @@ function Enemy () {
 }
 
 Enemy.prototype.draw = function  () {
-	clearEnemy();
 	this.drawX -= this.speed;
 	ctxEnemy.drawImage(sprite, this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
 };
