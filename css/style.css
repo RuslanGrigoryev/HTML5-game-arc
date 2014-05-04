@@ -2,7 +2,10 @@
 	background: #f1c40f;
 }
 #canvas {
-	background: #fff;
-	margin: 100px auto;
-	display: block
+	margin: 100px auto 0px;
+	display: block;
+}
+#canvasJet {
+	display: block;
+	margin:-500px auto 0px;
 }
