@@ -11,8 +11,8 @@
     gameWidth = canvasBg.width,
     gameHeight = canvasBg.height,
 
-    fps = 10,
-    drawInterval = null,
+    isPlaying = false,
+    requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
     mainJet,
     enemyJet;
 
@@ -22,28 +22,31 @@ sprite.addEventListener('load', init, false);
 
 // INITIALIZATION 
 function init () {
-	drawBg();
-	startDrawing();
 	mainJet = new Jet();
 	enemyJet = new Enemy();
+	drawBg();
+	startLoop();
 
 	document.addEventListener('keydown', checkKeyDown,false);
 	document.addEventListener('keyup', checkKeyUp,false);
 }
 
-function draw () {
-	enemyJet.draw();
-	mainJet.draw();
+function loop () {
+	if (isPlaying) {
+		enemyJet.draw();
+		mainJet.draw();
+		requestAnimFrame(loop);
+	}
 }
 
-function startDrawing() {
-	stopDrawing();
-	drawInterval = setInterval(draw, fps);
+function startLoop () {
+	isPlaying = true;
+	loop();
 }
 
-function stopDrawing () {
-	clearInterval(drawInterval);
-}
+function stopLoop () {
+	isPlaying = false;
+}	
 
 function clearBg () {
 	ctx.clearRect(0,0,gameWidth,gameHeight);
