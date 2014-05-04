@@ -5,7 +5,7 @@
 	margin: 100px auto 0px;
 	display: block;
 }
-#canvasJet {
+#canvasJet, #canvasEnemy {
 	display: block;
 	margin:-500px auto 0px;
 }
