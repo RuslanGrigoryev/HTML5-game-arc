@@ -14,10 +14,8 @@
     isPlaying = false,
     requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
     mainJet = new Jet(),
-    spawnInterval,
-    totalEnemies = 0,
     enemies = [],
-    spawnRate = 2000,
+    bullets = [],
     spawnAmount = 1;
 
 clearCanvasBtn.addEventListener('click', clearBg, false);
@@ -26,6 +24,7 @@ sprite.addEventListener('load', init, false);
 
 // INITIALIZATION 
 function init () {
+	spawnEnemy(spawnAmount);
 	drawBg();
 	startLoop();
 	document.addEventListener('keydown', checkKeyDown,false);
@@ -34,8 +33,7 @@ function init () {
 
 function spawnEnemy (num) {
 	for (var i = 0; i < num; i++) {
-		enemies[totalEnemies] = new Enemy();
-		totalEnemies++;
+		enemies[enemies.length] = new Enemy();
 	}
 }
 
@@ -44,15 +42,6 @@ function drawAllEnemies () {
 	for ( var i = 0 ; i < enemies.length; i++) {
 		enemies[i].draw();
 	}
-}
-
-function startSpawningEnemies () {
-	stopSpawningEnemies();
-	spawnInterval = setInterval(function () {spawnEnemy(spawnAmount);}, spawnRate)
-}
-
-function stopSpawningEnemies () {
-	clearInterval(spawnInterval);
 }
 
 function loop () {
@@ -66,12 +55,10 @@ function loop () {
 function startLoop () {
 	isPlaying = true;
 	loop();
-	startSpawningEnemies();
 }
 
 function stopLoop () {
 	isPlaying = false;
-	stopSpawningEnemies();
 }	
 
 function clearBg () {
@@ -94,18 +81,31 @@ function Jet () {
 	this.srcY  = 501;
 	this.width = 120;
 	this.height = 91;
-	this.speed = 2;
+	this.speed = 4;
 	this.drawX = 120;
 	this.drawY = 200;
+	this.noseX = this.drawX + 40;
+	this.noseY = this.drawY + 40;
 	this.isUpKey = false;
 	this.isDownKey = false;
 	this.isLeftKey = false;
 	this.isRightKey = false;
+	this.isSpaceBar = false;
+	this.isShooting = false;
+	this.bullets = [];
+	this.currentBullet = 0;
+	for (var i = 0; i < 15; i++) {
+		this.bullets[this.bullets.length] = new Bullet();
+	}
 }
 
 Jet.prototype.draw = function  () {
 	clearJet();
 	this.checkDirection();
+	this.noseX = this.drawX + 40;
+	this.noseY = this.drawY + 40;
+	this.checkShooting();
+	this.drawAllBullets();
 	ctxJet.drawImage(sprite, this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
 };
 
@@ -123,6 +123,27 @@ Jet.prototype.checkDirection = function  () {
 		this.drawX -= this.speed;
 	}
 };
+
+Jet.prototype.drawAllBullets = function () {
+	for ( var i = 0; i < this.bullets.length; i++) {
+		if ( this.bullets[i].drawX >= 0) {
+			this.bullets[i].draw();
+		}
+	}
+}
+
+Jet.prototype.checkShooting = function () {
+	if (this.isSpaceBar && !this.isShooting) {
+		this.isShooting = true;
+		this.bullets[this.currentBullet].fire(this.noseX, this.noseY);
+		this.currentBullet++;
+		if (this.currentBullet >= this.bullets.length) {
+			this.currentBullet = 0;
+		} else if (!this.isSpaceBar) {
+			this.isShooting = false;
+		}
+	}
+}
 
 function clearJet () {
 	ctxJet.clearRect(0,0,gameWidth,gameHeight);
@@ -147,13 +168,47 @@ function Enemy () {
 Enemy.prototype.draw = function  () {
 	this.drawX -= this.speed;
 	ctxEnemy.drawImage(sprite, this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
+	this.checkEscaped();
+};
+
+Enemy.prototype.checkEscaped = function  () {
+	if ( ( this.drawX + this.width )<= 0 ) {
+		this.recycleEnemy();
+	}
+};
+
+Enemy.prototype.recycleEnemy= function  () {
+	this.drawX = Math.floor(Math.random() * 1000) + gameWidth;
+	this.drawY = Math.floor(Math.random() * gameHeight);
 };
 
 function clearEnemy () {
 	ctxEnemy.clearRect(0,0,gameWidth,gameHeight);
 }
 
+// bullet functions
 
+function Bullet () {
+	this.srcX = 120;
+	this.srcY = 500;
+	this.drawX = -20;
+	this.drawY = 0;
+	this.width = 7;
+	this.height = 7;
+}
+
+Bullet.prototype.draw = function () {
+	this.drawX += 3;
+	ctxJet.drawImage(sprite, this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
+	if ( this.drawX > gameWidth ) {
+		this.drawX = -20;
+	}
+}
+
+Bullet.prototype.fire = function (startX, startY) {
+	this.drawX = startX;
+	this.drawY = startY;
+}
 
 // event 
 function checkKeyDown (e) {
@@ -174,6 +229,10 @@ function checkKeyDown (e) {
     	mainJet.isDownKey = true;
     	e.preventDefault();
     }
+    if (keyId === 32) {
+    	mainJet.isSpaceBar = true;
+    	e.preventDefault();
+    }
 }
 
 function checkKeyUp (e) {
@@ -192,6 +251,10 @@ function checkKeyUp (e) {
     }
     if (keyId === 40) {
     	mainJet.isDownKey = false;
+    	e.preventDefault();
+    }
+    if (keyId === 32) {
+    	mainJet.isSpaceBar = true;
     	e.preventDefault();
     }
 }
