@@ -14,7 +14,7 @@
     isPlaying = false,
     requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
     jet1 = new Jet(),
-    btnPlay = new Button(325, 500, 925, 980);
+    btnPlay = new Button(325, 500, 225, 280);
     enemies = [],
     spawnAmount = 1,
     mouseX = 0,
@@ -216,8 +216,8 @@ function Bullet() {
     this.srcY = 500;
     this.drawX = -20;
     this.drawY = 0;
-    this.width = 5;
-    this.height = 5;
+    this.width = 13;
+    this.height = 8;
     this.explosion = new Explosion();
 }
 
