@@ -14,8 +14,11 @@
     isPlaying = false,
     requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
     jet1 = new Jet(),
+    btnPlay = new Button(325, 500, 925, 980);
     enemies = [],
-    spawnAmount = 1;
+    spawnAmount = 1,
+    mouseX = 0,
+    mouseY = 0;
 imgSprite.src = "i/sprite.png";
 imgSprite.addEventListener('load', init, false);
 
@@ -23,6 +26,11 @@ imgSprite.addEventListener('load', init, false);
 
 function init() {
     spawnEnemy(5);
+    drawMenu();
+    document.addEventListener('click', mouseClicked, false);
+}
+
+function playGame () {
     drawBg();
     startLoop();
     document.addEventListener('keydown', checkKeyDown, false);
@@ -60,15 +68,23 @@ function stopLoop() {
 }
 
 function drawBg() {
-    var srcX = 0;
-    var srcY = 0;
-    var drawX = 0;
-    var drawY = 0;
-    ctxBg.drawImage(imgSprite, srcX, srcY, gameWidth, gameHeight, drawX, drawY, gameWidth, gameHeight);
+    ctxBg.drawImage(imgSprite, 0, 0, gameWidth, gameHeight,0, 0, gameWidth, gameHeight);
+}
+
+function drawMenu() {
+    ctxBg.drawImage(imgSprite, 0, 700, gameWidth, gameHeight,0, 0, gameWidth, gameHeight);
 }
 
 function clearCtxBg() {
     ctxBg.clearRect(0, 0, gameWidth, gameHeight);
+}
+
+function mouseClicked (e) {
+	mouseX = e.pageX - canvasBg.offsetLeft;
+	mouseY = e.pageY - canvasBg.offsetTop;
+	if ( btnPlay.checkClicked()) {
+		playGame();
+	}
 }
 
 // end of main functions
@@ -78,7 +94,22 @@ function clearCtxBg() {
 
 
 
+/*Button functions start*/
 
+function Button (xL, xR, yT, yB) {
+	this.xLeft = xL; // левая граница кнопки
+	this.xRight = xR; // правая граница кнопки
+	this.yTop = yT; // верхняя граница кнопки
+	this.yBottom = yB; // нижняя граница кнопки
+}
+
+Button.prototype.checkClicked = function () {
+
+	if (this.xLeft <= mouseX && mouseX <= this.xRight && this.yTop <= mouseY &&  mouseY <= this.yBottom) {
+		return true;
+	}
+};
+/*Button functions end*/
 
 
 
