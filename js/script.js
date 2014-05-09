@@ -20,11 +20,25 @@
     spawnAmount = 1,
     mouseX = 0,
     mouseY = 0,
+    bgDrawX1 = 0,
+    bgDrawX2 = 1600,
     jetHitCounter = 0;
 imgSprite.src = "i/sprite.png";
 imgSprite.addEventListener('load', init, false);
 
 // main functions
+
+function moveBg() {
+	bgDrawX1 -= 1;
+	bgDrawX2 -= 1;
+	if ( bgDrawX1 <= -1600 ) {
+		bgDrawX1 = 1600;
+	}
+	else if ( bgDrawX2 <= -1600 ) {
+		bgDrawX2 = 1600;
+	}
+	drawBg();
+}
 
 function init() {
     spawnEnemy(5);
@@ -55,6 +69,7 @@ function drawAllEnemies() {
 
 function loop() {
     if (isPlaying) {
+    	moveBg();
         jet1.draw();
         drawAllEnemies();
         requestAnimFrame(loop);
@@ -71,15 +86,13 @@ function stopLoop() {
 }
 
 function drawBg() {
-    ctxBg.drawImage(imgSprite, 0, 0, gameWidth, gameHeight,0, 0, gameWidth, gameHeight);
+    ctxBg.clearRect(0, 0, gameWidth, gameHeight);
+    ctxBg.drawImage(imgSprite, 0, 0, 1600, gameHeight, bgDrawX1, 0, 1600, gameHeight);
+    ctxBg.drawImage(imgSprite, 0, 0, 1600, gameHeight, bgDrawX2, 0, 1600, gameHeight);
 }
 
 function drawMenu() {
     ctxBg.drawImage(imgSprite, 0, 700, gameWidth, gameHeight,0, 0, gameWidth, gameHeight);
-}
-
-function clearCtxBg() {
-    ctxBg.clearRect(0, 0, gameWidth, gameHeight);
 }
 
 function mouseClicked (e) {
