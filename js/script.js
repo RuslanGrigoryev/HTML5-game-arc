@@ -1,6 +1,7 @@
 ﻿var canvasBg = document.getElementById('canvas'),
 	canvasJet = document.getElementById('canvasJet'),
 	canvasEnemy = document.getElementById('canvasEnemy'),
+	score       = document.getElementById('score'),
 
     ctxBg      = canvasBg.getContext('2d'),
     ctxJet      = canvasJet.getContext('2d'),
@@ -18,7 +19,8 @@
     enemies = [],
     spawnAmount = 1,
     mouseX = 0,
-    mouseY = 0;
+    mouseY = 0,
+    jetHitCounter = 0;
 imgSprite.src = "i/sprite.png";
 imgSprite.addEventListener('load', init, false);
 
@@ -35,6 +37,7 @@ function playGame () {
     startLoop();
     document.addEventListener('keydown', checkKeyDown, false);
     document.addEventListener('keyup', checkKeyUp, false);
+    score.innerHTML = 'Score is : ' + jetHitCounter;
 }
 
 function spawnEnemy(number) {
@@ -242,6 +245,8 @@ Bullet.prototype.checkHitEnemy = function() {
                 this.explosion.drawX = enemies[i].drawX - (this.explosion.width / 2);
                 this.explosion.drawY = enemies[i].drawY;
                 this.explosion.hasHit = true;
+                jetHitCounter++;
+                score.innerHTML = 'Score is : ' + jetHitCounter;
                 this.recycle();
                 enemies[i].recycleEnemy();
         }

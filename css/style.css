@@ -2,10 +2,14 @@
 	background: #f1c40f;
 }
 #canvas {
-	margin: 100px auto 0px;
+	margin: 50px auto 0px;
 	display: block;
 }
 #canvasJet, #canvasEnemy {
 	display: block;
 	margin:-500px auto 0px;
+}
+#score {
+	font-size: 30px;
+	text-align: center;
 }
