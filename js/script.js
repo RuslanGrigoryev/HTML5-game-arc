@@ -149,6 +149,10 @@ function Jet () {
     this.drawY = 200;
     this.noseX = this.drawX + 40;
     this.noseY = this.drawY + 40;
+    this.leftX = this.drawX;
+    this.rightX = this.drawX + this.width;
+    this.topY = this.drawY;
+    this.bottomY = this.drawY + this.height;
     this.isUpKey = false;
     this.isDownKey = false;
     this.isLeftKey = false;
@@ -164,6 +168,7 @@ function Jet () {
 
 Jet.prototype.draw = function() {
     clearCtxJet();
+    this.updateCoords();
     this.checkDirection();
     this.noseX = this.drawX + 40;
     this.noseY = this.drawY + 40;
@@ -172,17 +177,26 @@ Jet.prototype.draw = function() {
     ctxJet.drawImage(imgSprite, this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
 };
 
+Jet.prototype.updateCoords = function () {
+	this.noseX = this.drawX + 40;
+    this.noseY = this.drawY + 40;
+	this.leftX = this.drawX;
+	this.rightX = this.drawX + this.width;
+	this.topY = this.drawY;
+	this.bottomY = this.drawY + this.height;
+};
+
 Jet.prototype.checkDirection = function() {
-    if (this.isUpKey) {
+    if (this.isUpKey && this.topY > 0) {
         this.drawY -= this.speed;
     }
-    if (this.isRightKey) {
+    if (this.isRightKey && this.rightX < gameWidth) {
         this.drawX += this.speed;
     }
-    if (this.isDownKey) {
+    if (this.isDownKey && this.bottomY < gameHeight) {
         this.drawY += this.speed;
     }
-    if (this.isLeftKey) {
+    if (this.isLeftKey && this.leftX > 0) {
         this.drawX -= this.speed;
     }
 };
