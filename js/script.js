@@ -15,7 +15,6 @@
     requestAnimFrame = window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame,
     mainJet = new Jet(),
     enemies = [],
-    bullets = [],
     spawnAmount = 1;
 
 clearCanvasBtn.addEventListener('click', clearBg, false);
@@ -129,6 +128,9 @@ Jet.prototype.drawAllBullets = function () {
 		if ( this.bullets[i].drawX >= 0) {
 			this.bullets[i].draw();
 		}
+		if (this.bullets[i].explosion.hasHit) {
+			this.bullets[i].explosion.draw();
+		}
 	}
 }
 
@@ -195,11 +197,13 @@ function Bullet () {
 	this.drawY = 0;
 	this.width = 7;
 	this.height = 7;
+	this.explosion = new Explosion();
 }
 
 Bullet.prototype.draw = function () {
 	this.drawX += 3;
 	ctxJet.drawImage(sprite, this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
+	this.checkHitEnemy();
 	if ( this.drawX > gameWidth ) {
 		this.drawX = -20;
 	}
@@ -209,6 +213,51 @@ Bullet.prototype.fire = function (startX, startY) {
 	this.drawX = startX;
 	this.drawY = startY;
 }
+
+Bullet.prototype.recycle = function (startX, startY) {
+	this.drawX = -20;
+}
+
+Bullet.prototype.checkHitEnemy = function (startX, startY) {
+	for ( var i = 0 ; i < enemies.length; i++) {
+		if (this.drawX >= enemies[i].drawX &&
+		    this.drawX <= enemies[i].drawX + enemies[i].width &&
+		    this.drawY >= enemies[i].drawY &&
+		    this.drawY <= enemies[i].drawY + enemies[i].height ) 
+		{
+			this.explosion.drawX = enemies[i].drawX - (this.explosion.width / 2);
+			this.explosion.drawY = enemies[i].drawY;
+			this.explosion.hasHit = true;
+			this.recycle();
+			enemies[i].recycleEnemy();
+		}
+	}
+}
+
+// Explosion functions 
+
+function Explosion () {
+	this.srcX = 782;
+	this.srcY = 502;
+	this.drawX = 0;
+	this.drawY = 0;
+	this.width = 18;
+	this.height = 14;
+	this.currentFrame = 0;
+	this.totalFrames = 10;
+	this.hasHit = false;
+}
+
+Explosion.prototype.draw = function () {
+	if ( this.currentFrame <= this.totalFrames ) {
+       //draw explosion
+       ctxJet.drawImage(sprite, this.srcX, this.srcY, this.width, this.height, this.drawX, this.drawY, this.width, this.height);
+        this.currentFrame++;
+	} else {
+		this.hasHit = false;
+		this.currentFrame = 0;
+	}
+};
 
 // event 
 function checkKeyDown (e) {
